@@ -1,0 +1,5 @@
+FAILED tests/integration/test_pipeline_postgres.py::test_full_pipeline_stores_structured_result
+FAILED tests/integration/test_pipeline_postgres.py::test_sentiment_labels_are_persisted[I don't love it-negative]
+FAILED tests/unit/test_cleaner.py::test_normalises_text[I don't like it-i don't like it]
+FAILED tests/unit/test_pipeline.py::test_end_to_end_with_real_stages_and_in_memory_storage
+4 failed, 117 passed in 9.53s

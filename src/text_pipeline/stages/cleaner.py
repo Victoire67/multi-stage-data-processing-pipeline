@@ -15,7 +15,8 @@ logger = logging.getLogger(__name__)
 
 _HTML_TAG = re.compile(r"<[^>]+>")
 _URL = re.compile(r"(?:https?://|www\.)\S+", re.IGNORECASE)
-# Anything that is not a letter/digit, whitespace or an apostrophe.
+# Anything that is not a letter/digit, whitespace or an apostrophe. Apostrophes
+# must survive cleaning: the analyzer relies on negators such as "don't".
 _NON_WORD = re.compile(r"[^\w\s']|_")
 _WHITESPACE = re.compile(r"\s+")
 
