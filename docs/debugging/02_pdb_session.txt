@@ -1,0 +1,85 @@
+# Session A - symptom: breakpoint + watch expressions in SentimentAnalyzer._count_hits
+$ poetry run python -m pdb scripts/debug_session.py
+> <project>\scripts\debug_session.py(1)<module>()
+-> """Reproduce the negation bug used in the debugging exercise.
+(Pdb) Breakpoint 1 at <project>\src\text_pipeline\stages\analyzer.py:139
+(Pdb) > <project>\src\text_pipeline\stages\analyzer.py(139)_count_hits()
+-> negated = negation_left > 0
+(Pdb) display token: 'i'
+(Pdb) display negation_left: 0
+(Pdb) display (positive, negative): (0, 0)
+(Pdb) > <project>\src\text_pipeline\stages\analyzer.py(139)_count_hits()
+-> negated = negation_left > 0
+display token: 'don'  [old: 'i']
+(Pdb) > <project>\src\text_pipeline\stages\analyzer.py(139)_count_hits()
+-> negated = negation_left > 0
+display token: 't'  [old: 'don']
+(Pdb) > <project>\src\text_pipeline\stages\analyzer.py(139)_count_hits()
+-> negated = negation_left > 0
+display token: 'love'  [old: 't']
+(Pdb) > <project>\src\text_pipeline\stages\analyzer.py(139)_count_hits()
+-> negated = negation_left > 0
+display token: 'it'  [old: 'love']
+display (positive, negative): (1, 0)  [old: (0, 0)]
+(Pdb)   <python>\lib\bdb.py(913)run()
+-> exec(cmd, globals, locals)
+  <string>(1)<module>()
+  <project>\scripts\debug_session.py(25)<module>()
+-> main()
+  <project>\scripts\debug_session.py(20)main()
+-> record = pipeline.run(TEXT, run_id="debug-session")
+  <project>\src\text_pipeline\pipeline.py(128)run()
+-> analysed = self._run_stage(self.analyzer, cleaned)
+  <project>\src\text_pipeline\pipeline.py(193)_run_stage()
+-> output = stage.process(data)
+  <project>\src\text_pipeline\stages\analyzer.py(80)process()
+-> result = self._analyse(data)
+  <project>\src\text_pipeline\stages\analyzer.py(109)_analyse()
+-> positive, negative = self._count_hits(data.tokens)
+> <project>\src\text_pipeline\stages\analyzer.py(139)_count_hits()
+-> negated = negation_left > 0
+(Pdb) > <project>\src\text_pipeline\stages\analyzer.py(109)_analyse()
+-> positive, negative = self._count_hits(data.tokens)
+(Pdb) ('i', 'don', 't', 'love', 'it')
+(Pdb) "I don't love it"
+(Pdb) 'i don t love it'
+(Pdb) (False, True)
+(Pdb) Deleted breakpoint 1 at <project>\src\text_pipeline\stages\analyzer.py:139
+(Pdb) input="I don't love it" cleaned='i don t love it' sentiment=positive
+The program finished and will be restarted
+> <project>\scripts\debug_session.py(1)<module>()
+-> """Reproduce the negation bug used in the debugging exercise.
+(Pdb)
+# Session B - root cause: breakpoint in TextCleaner._clean after the punctuation regex
+$ poetry run python -m pdb scripts/debug_session.py
+> <project>\scripts\debug_session.py(1)<module>()
+-> """Reproduce the negation bug used in the debugging exercise.
+(Pdb) Breakpoint 1 at <project>\src\text_pipeline\stages\cleaner.py:115
+(Pdb) > <project>\src\text_pipeline\stages\cleaner.py(115)_clean()
+-> tokens = tuple(
+(Pdb) "I don't love it"
+(Pdb) 'i don t love it'
+(Pdb) '[^\\w\\s]|_'
+(Pdb) 'don t'
+(Pdb) "don't"
+(Pdb)   <python>\lib\bdb.py(913)run()
+-> exec(cmd, globals, locals)
+  <string>(1)<module>()
+  <project>\scripts\debug_session.py(25)<module>()
+-> main()
+  <project>\scripts\debug_session.py(20)main()
+-> record = pipeline.run(TEXT, run_id="debug-session")
+  <project>\src\text_pipeline\pipeline.py(127)run()
+-> cleaned = self._run_stage(self.cleaner, text)
+  <project>\src\text_pipeline\pipeline.py(193)_run_stage()
+-> output = stage.process(data)
+  <project>\src\text_pipeline\stages\cleaner.py(74)process()
+-> result = self._clean(data)
+> <project>\src\text_pipeline\stages\cleaner.py(115)_clean()
+-> tokens = tuple(
+(Pdb) Deleted breakpoint 1 at <project>\src\text_pipeline\stages\cleaner.py:115
+(Pdb) input="I don't love it" cleaned='i don t love it' sentiment=positive
+The program finished and will be restarted
+> <project>\scripts\debug_session.py(1)<module>()
+-> """Reproduce the negation bug used in the debugging exercise.
+(Pdb)
