@@ -1,5 +1,8 @@
 # Install once with:  poetry run pre-commit install
 # Run on everything:  poetry run pre-commit run --all-files
+# Generated coverage HTML is committed as-is.
+exclude: ^docs/coverage/html/
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
