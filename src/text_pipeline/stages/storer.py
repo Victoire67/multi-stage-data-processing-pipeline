@@ -2,14 +2,10 @@
 
 from __future__ import annotations
 
-import logging
-
 from text_pipeline.exceptions import StorageError
 from text_pipeline.models import AnalysisResult, StoredRecord
 from text_pipeline.repository import SentimentRepository
 from text_pipeline.stages.base import PipelineStage
-
-logger = logging.getLogger(__name__)
 
 
 class DatabaseStorer(PipelineStage[AnalysisResult, StoredRecord]):
@@ -23,6 +19,7 @@ class DatabaseStorer(PipelineStage[AnalysisResult, StoredRecord]):
     """
 
     name = "storer"
+    error_type = StorageError
 
     def __init__(self, repository: SentimentRepository) -> None:
         """Create the storer.
@@ -32,7 +29,7 @@ class DatabaseStorer(PipelineStage[AnalysisResult, StoredRecord]):
         """
         self.repository = repository
 
-    def process(self, data: AnalysisResult) -> StoredRecord:
+    def transform(self, data: AnalysisResult) -> StoredRecord:
         """Persist ``data``.
 
         Args:
@@ -44,34 +41,6 @@ class DatabaseStorer(PipelineStage[AnalysisResult, StoredRecord]):
         Raises:
             StorageError: If the input is invalid or the backend fails.
         """
-        logger.debug(
-            "stage started",
-            extra={"stage": self.name, "event": "stage_started"},
-        )
-        try:
-            record = self._store(data)
-        except StorageError as error:
-            logger.warning(
-                "stage failed",
-                extra={
-                    "stage": self.name,
-                    "event": "stage_failed",
-                    "error": str(error),
-                },
-            )
-            raise
-        logger.info(
-            "stage completed",
-            extra={
-                "stage": self.name,
-                "event": "stage_completed",
-                "state": record.to_log_dict(),
-            },
-        )
-        return record
-
-    def _store(self, data: object) -> StoredRecord:
-        """Validate ``data`` and delegate to the repository."""
         if not isinstance(data, AnalysisResult):
             raise StorageError(f"expected AnalysisResult, got {type(data).__name__}")
         try:
