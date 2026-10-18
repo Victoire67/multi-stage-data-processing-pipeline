@@ -87,6 +87,16 @@ def test_negation_flips_only_the_first_sentiment_word(
     assert result.sentiment is Sentiment.POSITIVE
 
 
+def test_negation_expires_when_no_sentiment_word_follows_in_window(
+    analyzer: SentimentAnalyzer,
+) -> None:
+    """With window=3, "bad" is the 4th token after "not" and stays negative."""
+    result = analyzer.process(make_cleaned("not the product was bad"))
+
+    assert (result.positive_hits, result.negative_hits) == (0, 1)
+    assert result.sentiment is Sentiment.NEGATIVE
+
+
 def test_counts_hits(analyzer: SentimentAnalyzer) -> None:
     """Positive and negative hits are reported for observability."""
     result = analyzer.process(make_cleaned("good excellent horrible"))
