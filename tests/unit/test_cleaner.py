@@ -9,6 +9,9 @@ from text_pipeline.models import CleanedText
 from text_pipeline.stages.base import PipelineStage
 from text_pipeline.stages.cleaner import TextCleaner
 
+# "FULL" written with full-width Unicode letters (U+FF26 ...).
+FULL_WIDTH = "".join(chr(ord(char) + 0xFEE0) for char in "FULL")
+
 
 @pytest.fixture
 def cleaner() -> TextCleaner:
@@ -34,7 +37,7 @@ def test_is_a_pipeline_stage(cleaner: TextCleaner) -> None:
         ("Fish &amp; chips", "fish chips"),
         ("I don't like it", "i don't like it"),
         ("'quoted' words", "quoted words"),
-        ("Ｆｕｌｌｗｉｄｔｈ text", "fullwidth text"),
+        (FULL_WIDTH + " width", "full width"),
         ("snake_case_word", "snake case word"),
         ("Café déjà vu", "café déjà vu"),
     ],
@@ -109,8 +112,10 @@ def test_logs_state_after_stage(
 
 def test_logs_failure(cleaner: TextCleaner, caplog: pytest.LogCaptureFixture) -> None:
     """Failures are logged at WARNING level with the stage name."""
-    with caplog.at_level(logging.WARNING, logger="text_pipeline"):
-        with pytest.raises(CleaningError):
-            cleaner.process("")
+    with (
+        caplog.at_level(logging.WARNING, logger="text_pipeline"),
+        pytest.raises(CleaningError),
+    ):
+        cleaner.process("")
 
     assert any(r.message == "stage failed" for r in caplog.records)
