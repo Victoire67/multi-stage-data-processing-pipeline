@@ -1,0 +1,34 @@
+{
+  // Debug configurations used during the debugging session (docs/debugging.md).
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Pipeline: run CLI (in-memory)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "text_pipeline",
+      "args": ["--in-memory", "--log-format", "text", "--log-level", "DEBUG",
+               "This is not bad, it's great!"],
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "Pytest: analyzer unit tests",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "pytest",
+      "args": ["tests/unit/test_analyzer.py", "-q", "-p", "no:cacheprovider"],
+      "console": "integratedTerminal",
+      "justMyCode": false
+    },
+    {
+      "name": "Pytest: integration tests (Docker)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "pytest",
+      "args": ["tests/integration", "-q"],
+      "console": "integratedTerminal",
+      "justMyCode": false
+    }
+  ]
+}
