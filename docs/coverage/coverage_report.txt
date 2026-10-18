@@ -1,0 +1,24 @@
+=============================== tests coverage ================================
+_______________ coverage: platform win32, python 3.14.8-final-0 _______________
+
+Name                                   Stmts   Miss Branch BrPart  Cover   Missing
+----------------------------------------------------------------------------------
+src\text_pipeline\__init__.py              4      0      0      0   100%
+src\text_pipeline\cli.py                  71      0     12      0   100%
+src\text_pipeline\config.py               20      0      4      0   100%
+src\text_pipeline\exceptions.py           14      0      0      0   100%
+src\text_pipeline\lexicon.py              11      0      0      0   100%
+src\text_pipeline\logging_config.py       50      0     12      0   100%
+src\text_pipeline\models.py               42      0      0      0   100%
+src\text_pipeline\pipeline.py             81      0      2      0   100%
+src\text_pipeline\repository.py           71      0      8      0   100%
+src\text_pipeline\stages\__init__.py       2      0      0      0   100%
+src\text_pipeline\stages\analyzer.py      61      0     28      0   100%
+src\text_pipeline\stages\base.py          29      0      2      0   100%
+src\text_pipeline\stages\cleaner.py       37      0     12      0   100%
+src\text_pipeline\stages\storer.py        19      0      2      0   100%
+----------------------------------------------------------------------------------
+TOTAL                                    512      0     82      0   100%
+Coverage HTML written to dir docs/coverage/html
+Required test coverage of 90.0% reached. Total coverage: 100.00%
+130 passed in 10.91s
