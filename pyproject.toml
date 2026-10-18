@@ -78,6 +78,7 @@ markers = [
 
 [tool.coverage.run]
 source = ["text_pipeline"]
+omit = ["*/__main__.py"]
 branch = true
 
 [tool.coverage.report]
