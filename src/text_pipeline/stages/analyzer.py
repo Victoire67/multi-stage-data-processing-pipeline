@@ -2,15 +2,12 @@
 
 from __future__ import annotations
 
-import logging
 from collections.abc import Sequence
 
 from text_pipeline.exceptions import AnalysisError
 from text_pipeline.lexicon import DEFAULT_LEXICON, SentimentLexicon
 from text_pipeline.models import AnalysisResult, CleanedText, Sentiment
 from text_pipeline.stages.base import PipelineStage
-
-logger = logging.getLogger(__name__)
 
 
 class SentimentAnalyzer(PipelineStage[CleanedText, AnalysisResult]):
@@ -31,6 +28,7 @@ class SentimentAnalyzer(PipelineStage[CleanedText, AnalysisResult]):
     """
 
     name = "analyzer"
+    error_type = AnalysisError
 
     def __init__(
         self,
@@ -60,7 +58,7 @@ class SentimentAnalyzer(PipelineStage[CleanedText, AnalysisResult]):
         self.neutral_threshold = neutral_threshold
         self.negation_window = negation_window
 
-    def process(self, data: CleanedText) -> AnalysisResult:
+    def transform(self, data: CleanedText) -> AnalysisResult:
         """Analyse ``data``.
 
         Args:
@@ -72,34 +70,6 @@ class SentimentAnalyzer(PipelineStage[CleanedText, AnalysisResult]):
         Raises:
             AnalysisError: If the input is invalid or scoring fails.
         """
-        logger.debug(
-            "stage started",
-            extra={"stage": self.name, "event": "stage_started"},
-        )
-        try:
-            result = self._analyse(data)
-        except AnalysisError as error:
-            logger.warning(
-                "stage failed",
-                extra={
-                    "stage": self.name,
-                    "event": "stage_failed",
-                    "error": str(error),
-                },
-            )
-            raise
-        logger.info(
-            "stage completed",
-            extra={
-                "stage": self.name,
-                "event": "stage_completed",
-                "state": result.to_log_dict(),
-            },
-        )
-        return result
-
-    def _analyse(self, data: object) -> AnalysisResult:
-        """Validate the input and build the analysis result."""
         if not isinstance(data, CleanedText):
             raise AnalysisError(f"expected CleanedText, got {type(data).__name__}")
         if not data.tokens:

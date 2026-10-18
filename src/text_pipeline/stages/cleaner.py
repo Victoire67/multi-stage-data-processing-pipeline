@@ -3,15 +3,12 @@
 from __future__ import annotations
 
 import html
-import logging
 import re
 import unicodedata
 
 from text_pipeline.exceptions import CleaningError
 from text_pipeline.models import CleanedText
 from text_pipeline.stages.base import PipelineStage
-
-logger = logging.getLogger(__name__)
 
 _HTML_TAG = re.compile(r"<[^>]+>")
 _URL = re.compile(r"(?:https?://|www\.)\S+", re.IGNORECASE)
@@ -38,6 +35,7 @@ class TextCleaner(PipelineStage[str, CleanedText]):
     """
 
     name = "cleaner"
+    error_type = CleaningError
 
     def __init__(self, *, lowercase: bool = True, max_length: int = 10_000) -> None:
         """Configure the cleaner.
@@ -54,7 +52,7 @@ class TextCleaner(PipelineStage[str, CleanedText]):
         self.lowercase = lowercase
         self.max_length = max_length
 
-    def process(self, data: str) -> CleanedText:
+    def transform(self, data: str) -> CleanedText:
         """Clean ``data``.
 
         Args:
@@ -67,34 +65,6 @@ class TextCleaner(PipelineStage[str, CleanedText]):
             CleaningError: If the input is not a string, is empty, is too long
                 or contains nothing meaningful after cleaning.
         """
-        logger.debug(
-            "stage started",
-            extra={"stage": self.name, "event": "stage_started", "input": data},
-        )
-        try:
-            result = self._clean(data)
-        except CleaningError as error:
-            logger.warning(
-                "stage failed",
-                extra={
-                    "stage": self.name,
-                    "event": "stage_failed",
-                    "error": str(error),
-                },
-            )
-            raise
-        logger.info(
-            "stage completed",
-            extra={
-                "stage": self.name,
-                "event": "stage_completed",
-                "state": result.to_log_dict(),
-            },
-        )
-        return result
-
-    def _clean(self, data: object) -> CleanedText:
-        """Validate and normalise ``data`` (pure function, no logging)."""
         if not isinstance(data, str):
             raise CleaningError(f"expected str, got {type(data).__name__}")
         if not data.strip():
