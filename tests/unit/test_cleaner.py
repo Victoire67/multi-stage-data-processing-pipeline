@@ -51,6 +51,16 @@ def test_normalises_text(cleaner: TextCleaner, raw: str, expected: str) -> None:
     assert result.tokens == tuple(expected.split())
 
 
+@pytest.mark.parametrize("negator", ["don't", "isn't", "can't", "won't", "wasn't"])
+def test_preserves_negation_contractions(cleaner: TextCleaner, negator: str) -> None:
+    """Regression (docs/debugging.md): apostrophes in negators must survive.
+
+    The analyzer only recognises "don't" as a negator if the cleaner keeps it as
+    a single token; splitting it into "don" + "t" flipped sentiment labels.
+    """
+    assert negator in cleaner.process(f"I {negator.upper()} agree").tokens
+
+
 def test_returns_cleaned_text_model(cleaner: TextCleaner) -> None:
     """The stage output is the CleanedText contract for the next stage."""
     assert isinstance(cleaner.process("ok"), CleanedText)
