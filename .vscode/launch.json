@@ -1,34 +1,50 @@
 {
-  // Debug configurations used during the debugging session (docs/debugging.md).
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Pipeline: run CLI (in-memory)",
-      "type": "debugpy",
+      "name": "Debug SST",
+      "type": "node",
       "request": "launch",
-      "module": "text_pipeline",
-      "args": ["--in-memory", "--log-format", "text", "--log-level", "DEBUG",
-               "This is not bad, it's great!"],
+      "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/sst",
+      "runtimeArgs": ["dev", "--increase-timeout"],
       "console": "integratedTerminal",
-      "justMyCode": true
+      "skipFiles": ["<node_internals>/**"],
+      // sourceMapRenames helps with the loading spinner when debugging and viewing local variables
+      "sourceMapRenames": false,
+      "env": {
+        "AWS_PROFILE": "flo-ct-flo360"
+      }
     },
     {
-      "name": "Pytest: analyzer unit tests",
-      "type": "debugpy",
+      "name": "Debug Tests - Unit",
+      "type": "node",
       "request": "launch",
-      "module": "pytest",
-      "args": ["tests/unit/test_analyzer.py", "-q", "-p", "no:cacheprovider"],
+      "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/sst",
+      "runtimeArgs": ["bind", "yarn", "\"jest\"", "\"--watch\"", "\"--config\"", "\"./jest.unit.config.cjs\"", "\"${input:scopeTestsFileName}\""],
       "console": "integratedTerminal",
-      "justMyCode": false
+      "skipFiles": ["<node_internals>/**"],
+      "env": {
+        "AWS_PROFILE": "flo-ct-flo360"
+      },
     },
     {
-      "name": "Pytest: integration tests (Docker)",
-      "type": "debugpy",
+      "name": "Debug Tests - E2E",
+      "type": "node",
       "request": "launch",
-      "module": "pytest",
-      "args": ["tests/integration", "-q"],
+      "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/sst",
+      "runtimeArgs": ["bind", "yarn", "\"vitest\"", "\"--config\"", "\"./vitest.e2e.config.ts\"", "\"${input:scopeTestsFileName}\""],
       "console": "integratedTerminal",
-      "justMyCode": false
+      "skipFiles": ["<node_internals>/**"],
+      "env": {
+        "AWS_PROFILE": "flo-ct-flo360"
+      },
+    },
+  ],
+  "inputs": [
+    {
+      "id": "scopeTestsFileName",
+      "type": "promptString",
+      "description": "Partial file name to scope test debugging to. ex. arena. Leave blank to run all tests.",
     }
   ]
 }

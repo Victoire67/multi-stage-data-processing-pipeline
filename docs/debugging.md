@@ -59,6 +59,7 @@ The analyzer only saw one positive hit and no negation. Already a strong hint
 
 ## 4. Debugger session
 
+Line numbers below refer to the code at the bug commit `aded498`.
 The session was driven with `pdb` (full transcript in
 [`02_pdb_session.txt`](debugging/02_pdb_session.txt)). The identical steps in
 VS Code use the **"Python: Current File"** or **"Pytest: analyzer unit
@@ -167,7 +168,8 @@ screenshots the submission asks for, repeat sessions A and B in VS Code:
 
 1. `git checkout aded498 -- src/text_pipeline/stages/cleaner.py` (puts the
    buggy version back temporarily).
-2. Open `src/text_pipeline/stages/analyzer.py`, set a breakpoint on line 139.
+2. Open `src/text_pipeline/stages/analyzer.py` and set a breakpoint on the
+   line `negated = negation_left > 0` inside `_count_hits`.
 3. Run **"Python: Current File"** on `scripts/debug_session.py` (or the
    **"Pytest: analyzer unit tests"** config).
 4. Add `token`, `negation_left`, `(positive, negative)` to **WATCH**; press F5 a
