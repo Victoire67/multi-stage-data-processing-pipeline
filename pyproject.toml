@@ -1,6 +1,6 @@
 [project]
 name = "text-pipeline"
-version = "0.1.0"
+version = "1.0.0"
 description = "Multi-stage text processing pipeline: clean -> analyze sentiment -> store in PostgreSQL."
 authors = [{ name = "victoire67", email = "ansimavicky@gmail.com" }]
 readme = "README.md"
