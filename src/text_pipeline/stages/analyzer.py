@@ -19,8 +19,9 @@ class SentimentAnalyzer(PipelineStage[CleanedText, AnalysisResult]):
     This is a deliberately simple *simulated* model:
 
     * every token found in the positive/negative word list is a "hit";
-    * a negator (``not``, ``don't``, ...) flips the polarity of hits within the
-      next ``negation_window`` tokens;
+    * a negator (``not``, ``don't``, ...) flips the polarity of the *first*
+      hit found within the next ``negation_window`` tokens (so in
+      ``"not bad, it's great"`` only ``bad`` is flipped);
     * ``score = (positive_hits - negative_hits) / (positive_hits + negative_hits)``
       (``0.0`` when there are no hits), so it always lies in ``[-1, 1]``;
     * ``|score| <= neutral_threshold`` is neutral, otherwise the sign decides.
@@ -44,7 +45,8 @@ class SentimentAnalyzer(PipelineStage[CleanedText, AnalysisResult]):
             lexicon: Vocabulary to score with; defaults to ``DEFAULT_LEXICON``.
             neutral_threshold: Scores whose absolute value is at most this are
                 neutral. Must be in ``[0, 1)``.
-            negation_window: How many tokens after a negator are flipped.
+            negation_window: How many tokens after a negator are searched for
+                a sentiment word to flip.
                 Must be at least 1.
 
         Raises:
@@ -140,13 +142,14 @@ class SentimentAnalyzer(PipelineStage[CleanedText, AnalysisResult]):
                     negative += 1
                 else:
                     positive += 1
+                negation_left = 0  # a negator only flips one sentiment word
             elif token in self.lexicon.negative:
                 if negated:
                     positive += 1
                 else:
                     negative += 1
-
-            if negation_left > 0:
+                negation_left = 0
+            elif negation_left > 0:
                 negation_left -= 1
         return positive, negative
 

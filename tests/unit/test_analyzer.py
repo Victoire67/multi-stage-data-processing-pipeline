@@ -77,6 +77,16 @@ def test_negation_only_applies_within_window(analyzer: SentimentAnalyzer) -> Non
     assert result.sentiment is Sentiment.POSITIVE
 
 
+def test_negation_flips_only_the_first_sentiment_word(
+    analyzer: SentimentAnalyzer,
+) -> None:
+    """Regression: in "not bad it's great" only "bad" is negated."""
+    result = analyzer.process(make_cleaned("not bad it's great"))
+
+    assert (result.positive_hits, result.negative_hits) == (2, 0)
+    assert result.sentiment is Sentiment.POSITIVE
+
+
 def test_counts_hits(analyzer: SentimentAnalyzer) -> None:
     """Positive and negative hits are reported for observability."""
     result = analyzer.process(make_cleaned("good excellent horrible"))
