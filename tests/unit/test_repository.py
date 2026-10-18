@@ -144,7 +144,7 @@ def test_get_missing_returns_none(
 def test_driver_errors_become_storage_errors(
     repo: PostgresSentimentRepository, connection: MagicMock, operation: Any
 ) -> None:
-    """psycopg errors are translated into StorageError, keeping the cause."""
+    """Driver (psycopg) errors are translated into StorageError, keeping the cause."""
     connection.execute.side_effect = psycopg.OperationalError("connection refused")
 
     with pytest.raises(StorageError, match="connection refused") as excinfo:
