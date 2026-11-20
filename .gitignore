@@ -26,8 +26,6 @@ htmlcov/
 .ruff_cache/
 
 # Environment / secrets
-.env
-.env.*
 
 # Editors / OS
 .idea/
@@ -35,3 +33,5 @@ htmlcov/
 Thumbs.db
 .gitignore
 branch_structure.json
+config.bat
+node_modules
